@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Eggs Order - Nairobi</title>
+
+    <!-- Bootstrap 5.3 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .btn-primary {
+            background-color: #e67e22;
+            border-color: #e67e22;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background-color: #d35400;
+            border-color: #d35400;
+        }
+        .price-display {
+            font-size: 2.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .total-display {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #27ae60;
+            min-height: 2.2rem;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #34495e;
+        }
+        .alert-dismissible {
+            margin-top: 1.5rem;
+        }
+        .hero-img {
+            max-height: 280px;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .price-egg-img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border: 3px solid #e67e22;
+            border-radius: 50%;
+        }
+        .bottom-img {
+            max-width: 280px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+
+                <!-- Header / Branding -->
+                <div class="text-center my-5">
+                    <h1 class="fw-bold text-dark">Fresh Eggs Order</h1>
+                    <p class="text-muted">Quality eggs delivered to your doorstep in Nairobi</p>
+                </div>
+
+                <!-- Hero Image: Fresh eggs tray -->
+                <div class="text-center mb-5">
+                    <img src="https://images.pexels.com/photos/8236168/pexels-photo-8236168.jpeg"
+                         alt="Fresh brown eggs neatly arranged in a tray, ready for delivery"
+                         class="img-fluid hero-img shadow">
+                    <p class="text-muted small mt-2">Farm-fresh trays delivered fast across Nairobi</p>
+                </div>
+
+                <!-- Main Order Card -->
+                <div class="card p-4 p-md-5 mb-5">
+                    <div class="text-center mb-4">
+                        <h3>Current Price</h3>
+                        <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+                            <!-- Small egg image next to price -->
+                            <img src="https://images.pexels.com/photos/2959317/pexels-photo-2959317.jpeg"
+                                 alt="Close-up of six fresh brown eggs in a tray"
+                                 class="price-egg-img shadow-sm">
+                            <div>
+                                <div class="price-display">KES {{ price|round(0)|int }}</div>
+                                <small class="text-muted">per tray (30 eggs)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="POST" class="needs-validation" novalidate id="orderForm">
+                        <!-- Name -->
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control form-control-lg" id="name" name="name"
+                                   placeholder="e.g. Mercy Wangui" required maxlength="100"
+                                   aria-describedby="nameHelp">
+                            <div class="invalid-feedback">Please enter your name.</div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-4">
+                            <label for="phone" class="form-label">M-Pesa Phone Number</label>
+                            <input type="tel" class="form-control form-control-lg" id="phone" name="phone"
+                                   placeholder="0712345678" pattern="0[17][0-9]{8}" required maxlength="10">
+                            <div class="form-text text-muted">We'll send the payment prompt here.</div>
+                            <div class="invalid-feedback">Valid Kenyan mobile number required (e.g. 0712345678).</div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-4">
+                            <label for="location" class="form-label">Delivery Location</label>
+                            <input type="text" class="form-control form-control-lg" id="location" name="location"
+                                   placeholder="e.g. Ngong Road, Karen, Westlands..." required maxlength="200"
+                                   aria-describedby="locationHelp">
+                            <div id="locationHelp" class="form-text text-muted">Be as specific as possible for fast delivery.</div>
+                            <div class="invalid-feedback">Please enter your delivery location.</div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="mb-4">
+                            <label for="amount" class="form-label">Number of Trays</label>
+                            <input type="number" class="form-control form-control-lg" id="amount" name="amount"
+                                   min="1" max="100" step="1" value="1" required>
+                            <div class="invalid-feedback">Enter at least 1 tray (max 100).</div>
+                        </div>
+
+                        <!-- Live Total -->
+                        <div class="text-center mb-4 total-display" id="totalDisplay">
+                            Total: KES {{ price|round(0)|int }}
+                        </div>
+
+                        <!-- Submit Button + Spinner -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                Place Order Now
+                            </button>
+                            <div id="loadingSpinner" class="d-none mt-3 text-center">
+                                <div class="spinner-border text-warning" role="status">
+                                    <span class="visually-hidden">Processing...</span>
+                                </div>
+                                <div class="mt-2 fw-medium">Placing your order...</div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Bottom reassurance image: Chickens on farm -->
+                    <div class="text-center mt-5 pt-4 border-top">
+                        <img src="https://images.pexels.com/photos/34314107/pexels-photo-34314107.jpeg"
+                             alt="Happy free-range chickens on a Kenyan farm, source of fresh eggs"
+                             class="img-fluid bottom-img shadow-sm">
+                        <p class="text-muted small mt-3">Sourced from healthy, happy chickens • Fresh daily</p>
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Live total script -->
+    <script>
+        const pricePerTray = {{ price }};
+        const amountInput = document.getElementById('amount');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const form = document.getElementById('orderForm');
+
+        function updateTotal() {
+            let amount = parseInt(amountInput.value) || 0;
+            if (amount < 1) amount = 1;
+            const total = amount * pricePerTray;
+            totalDisplay.textContent = `Total: KES ${total.toLocaleString('en-KE', {maximumFractionDigits: 0})}`;
+        }
+
+        amountInput.addEventListener('input', updateTotal);
+        amountInput.addEventListener('change', updateTotal);
+        updateTotal();
+
+        form.addEventListener('submit', function(e) {
+            if (!form.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            loadingSpinner.classList.remove('d-none');
+        });
+    </script>
+
+</body>
+</html>
