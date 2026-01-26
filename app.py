@@ -248,6 +248,6 @@ with app.app_context():
     db.session.commit()
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    port = int(os.environ.get("PORT", 5000))  # Railway sets this automatically
-    app.run(host="0.0.0.0", port=port)
+    import os
+    port = int(os.environ.get("PORT", 5000))  # Railway provides this
+    app.run(host="0.0.0.0", port=port, debug=True)
