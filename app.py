@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'super-secret-change-me'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eggs.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# M-Pesa config from .env
+# M-Pesa config
 MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET')
 MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
@@ -43,13 +43,13 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     location = db.Column(db.String(200))
-    phone = db.Column(db.String(15))  # Added for M-Pesa
-    amount = db.Column(db.Integer)     # trays
+    phone = db.Column(db.String(15))
+    amount = db.Column(db.Integer)
     status = db.Column(db.String(50), default='Pending Payment')
 
 class Price(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    egg_price = db.Column(db.Float, default=150.0)  # per tray, update as needed
+    egg_price = db.Column(db.Float, default=150.0)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -57,15 +57,11 @@ def load_user(user_id):
 
 # ---------------- M-Pesa Helpers ----------------
 from requests.auth import HTTPBasicAuth
+
 def get_mpesa_access_token():
-    """Get OAuth token from Safaricom Daraja 3.0 sandbox"""
     url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
     try:
-        r = requests.get(
-            url,
-            auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET),
-            timeout=10
-        )
+        r = requests.get(url, auth=HTTPBasicAuth(MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET), timeout=10)
         r.raise_for_status()
         token = r.json().get('access_token')
         if token:
@@ -75,14 +71,7 @@ def get_mpesa_access_token():
         print(f"Failed to get token: {e}")
         return None
 
-
 def initiate_stk_push(phone_mpesa, amount_kes, order_id, customer_name, trays):
-    """
-    Send STK push request to Safaricom sandbox
-    phone_mpesa: 2547XXXXXXXX format
-    amount_kes: integer
-    order_id: for account reference
-    """
     token = get_mpesa_access_token()
     if not token:
         return None, "Failed to get M-Pesa token"
@@ -96,7 +85,7 @@ def initiate_stk_push(phone_mpesa, amount_kes, order_id, customer_name, trays):
         "Password": password,
         "Timestamp": timestamp,
         "TransactionType": "CustomerPayBillOnline",
-        "Amount": int(amount_kes),  # must be integer
+        "Amount": int(amount_kes),
         "PartyA": phone_mpesa,
         "PartyB": MPESA_SHORTCODE,
         "PhoneNumber": phone_mpesa,
@@ -105,11 +94,7 @@ def initiate_stk_push(phone_mpesa, amount_kes, order_id, customer_name, trays):
         "TransactionDesc": f"{trays} trays eggs - {customer_name}"
     }
 
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
-    }
-
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
 
     try:
@@ -118,13 +103,11 @@ def initiate_stk_push(phone_mpesa, amount_kes, order_id, customer_name, trays):
         r.raise_for_status()
         result = r.json()
         print("STK push response:", result)
-
         if result.get("ResponseCode") == "0":
             return result.get("CheckoutRequestID"), None
         return None, result.get("errorMessage") or result.get("ResponseDescription") or "STK failed"
     except Exception as e:
         return None, str(e)
-
 
 # ---------------- Routes ----------------
 @app.route('/', methods=['GET', 'POST'])
@@ -135,10 +118,7 @@ def index():
         name = request.form.get('name', '').strip()
         location = request.form.get('location', '').strip()
         phone = request.form.get('phone', '').strip()
-        try:
-            trays = int(request.form.get('amount', 0))
-        except:
-            trays = 0
+        trays = int(request.form.get('amount', 0) or 0)
 
         if not name or not location or not phone or trays < 1:
             flash('Please complete all fields correctly.', 'danger')
@@ -156,10 +136,8 @@ def index():
         db.session.commit()
 
         checkout_id, error = initiate_stk_push(phone_mpesa, total, order.id, name, trays)
-
         if checkout_id:
             flash(f'Payment prompt sent to {phone}! Complete on your phone.', 'success')
-            # Later: store checkout_id if you add a column
         else:
             db.session.delete(order)
             db.session.commit()
@@ -173,12 +151,9 @@ def index():
 def mpesa_callback():
     try:
         data = request.get_json(force=True)
-        print("CALLBACK:", data)  # Check your terminal/console
-
+        print("CALLBACK:", data)
         if data.get('Body', {}).get('stkCallback', {}).get('ResultCode') == 0:
             print("PAYMENT SUCCESS!")
-            # TODO: update order status to 'Paid'
-            # Send SMS to admin
             if TWILIO_SID and TWILIO_TOKEN and ADMIN_PHONE:
                 client = Client(TWILIO_SID, TWILIO_TOKEN)
                 client.messages.create(
@@ -188,7 +163,6 @@ def mpesa_callback():
                 )
         else:
             print("Payment failed/cancelled")
-
         return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
     except Exception as e:
         print(f"Callback error: {e}")
@@ -224,7 +198,6 @@ def admin():
                 flash('Price updated', 'success')
             except:
                 flash('Invalid price', 'danger')
-
         if 'delete' in request.form:
             oid = int(request.form.get('order_id'))
             o = Order.query.get(oid)
@@ -237,17 +210,19 @@ def admin():
     price = Price.query.first().egg_price if Price.query.first() else 150.0
     return render_template('admin.html', orders=orders, price=price)
 
-# ---------------- Init DB & Default Data ----------------
+# ---------------- Init DB safely ----------------
 with app.app_context():
     db.create_all()
-    if not User.query.first():
-        admin = User(username='admin', password=generate_password_hash('admin123', method='pbkdf2:sha256'))
+    # Safe admin user creation
+    if not User.query.filter_by(username='admin').first():
+        admin = User(
+            username='admin',
+            password=generate_password_hash('admin123', method='pbkdf2:sha256')
+        )
         db.session.add(admin)
+    # Safe price initialization
     if not Price.query.first():
         db.session.add(Price(egg_price=150.0))
     db.session.commit()
 
-#if __name__ == '__main__':
-#import os
-#port = int(os.environ.get("PORT", 5000))  # Railway provides this
-#app.run(host="0.0.0.0", port=port, debug=True)
+# ---------------- Gunicorn-ready: no need to call app.run ----------------
