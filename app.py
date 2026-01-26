@@ -46,6 +46,7 @@ class Order(db.Model):
     phone = db.Column(db.String(15))
     amount = db.Column(db.Integer)
     status = db.Column(db.String(50), default='Pending Payment')
+    checkout_request_id = db.Column(db.String(100))
 
 class Price(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -137,6 +138,8 @@ def index():
 
         checkout_id, error = initiate_stk_push(phone_mpesa, total, order.id, name, trays)
         if checkout_id:
+            order.checkout_request_id = checkout_id
+            db.session.commit()
             flash(f'Payment prompt sent to {phone}! Complete on your phone.', 'success')
         else:
             db.session.delete(order)
@@ -152,38 +155,29 @@ def index():
 def mpesa_callback():
     try:
         data = request.get_json(force=True)
-        print("MPESA CALLBACK RECEIVED:", data)
+        print("MPESA CALLBACK:", data)
 
         stk = data['Body']['stkCallback']
         result_code = stk['ResultCode']
+        checkout_id = stk['CheckoutRequestID']
 
-        # Extract AccountReference (EGG{order_id})
-        items = stk.get('CallbackMetadata', {}).get('Item', [])
-        account_ref = None
+        order = Order.query.filter_by(checkout_request_id=checkout_id).first()
 
-        for item in items:
-            if item.get('Name') == 'AccountReference':
-                account_ref = item.get('Value')
-                break
+        if order:
+            if result_code == 0:
+                order.status = "Completed"
+            else:
+                order.status = "Failed"
 
-        if account_ref:
-            order_id = int(account_ref.replace("EGG", ""))
-            order = Order.query.get(order_id)
-
-            if order:
-                if result_code == 0:
-                    order.status = "Completed"
-                else:
-                    order.status = "Failed"
-
-                db.session.commit()
-                print(f"Order {order_id} updated to {order.status}")
+            db.session.commit()
+            print(f"Order {order.id} updated to {order.status}")
 
         return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
 
     except Exception as e:
         print("CALLBACK ERROR:", e)
         return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
+
 
 
 
