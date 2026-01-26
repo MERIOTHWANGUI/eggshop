@@ -247,7 +247,7 @@ with app.app_context():
         db.session.add(Price(egg_price=150.0))
     db.session.commit()
 
-if __name__ == '__main__':
-   # import os
-    #port = int(os.environ.get("PORT", 5000))  # Railway provides this
-    #app.run(host="0.0.0.0", port=port, debug=True)
+#if __name__ == '__main__':
+#import os
+#port = int(os.environ.get("PORT", 5000))  # Railway provides this
+#app.run(host="0.0.0.0", port=port, debug=True)
