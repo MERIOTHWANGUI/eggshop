@@ -46,7 +46,7 @@ class Order(db.Model):
     phone = db.Column(db.String(15))
     amount = db.Column(db.Integer)
     status = db.Column(db.String(50), default='Pending Payment')
-    checkout_request_id = db.Column(db.String(100))
+    checkout_request_id = db.Column(db.String(50), unique=True)
 
 class Price(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -153,30 +153,23 @@ def index():
 
 @app.route('/mpesa_callback', methods=['POST'])
 def mpesa_callback():
-    try:
-        data = request.get_json(force=True)
-        print("MPESA CALLBACK:", data)
+    data = request.get_json(force=True)
+    print("MPESA CALLBACK RECEIVED:", data)
 
-        stk = data['Body']['stkCallback']
-        result_code = stk['ResultCode']
-        checkout_id = stk['CheckoutRequestID']
+    stk = data['Body']['stkCallback']
+    checkout_id = stk['CheckoutRequestID']
+    result_code = stk['ResultCode']
 
-        order = Order.query.filter_by(checkout_request_id=checkout_id).first()
+    # Find order by CheckoutRequestID
+    order = Order.query.filter_by(checkout_request_id=checkout_id).first()
 
-        if order:
-            if result_code == 0:
-                order.status = "Completed"
-            else:
-                order.status = "Failed"
+    if order:
+        order.status = "Completed" if result_code == 0 else "Failed"
+        db.session.commit()
+        print(f"Order {order.id} updated to {order.status}")
 
-            db.session.commit()
-            print(f"Order {order.id} updated to {order.status}")
+    return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
 
-        return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
-
-    except Exception as e:
-        print("CALLBACK ERROR:", e)
-        return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
 
 
 
