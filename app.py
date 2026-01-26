@@ -147,26 +147,46 @@ def index():
 
     return render_template('index.html', price=price)
 
+
 @app.route('/mpesa_callback', methods=['POST'])
 def mpesa_callback():
     try:
         data = request.get_json(force=True)
         print("CALLBACK:", data)
-        if data.get('Body', {}).get('stkCallback', {}).get('ResultCode') == 0:
-            print("PAYMENT SUCCESS!")
+
+        stk = data.get('Body', {}).get('stkCallback', {})
+        result_code = stk.get('ResultCode')
+        checkout_id = stk.get('CheckoutRequestID')
+
+        # Find the order by AccountReference (or CheckoutRequestID if you saved it)
+        account_ref = stk.get('CallbackMetadata', {}).get('Item', [{}])[0].get('Value', '')
+        # Assuming AccountReference = "EGG{order_id}"
+        order_id = int(account_ref.replace("EGG", "")) if account_ref else None
+        order = Order.query.get(order_id) if order_id else None
+
+        if result_code == 0 and order:
+            order.status = "completed"  # <-- Update the status
+            db.session.commit()
+            print(f"Payment successful for order {order_id}")
+
+            # Optional: notify admin via Twilio
             if TWILIO_SID and TWILIO_TOKEN and ADMIN_PHONE:
                 client = Client(TWILIO_SID, TWILIO_TOKEN)
                 client.messages.create(
-                    body="New paid egg order received!",
+                    body=f"New paid egg order received! Order ID: {order_id}",
                     from_=TWILIO_PHONE,
                     to=ADMIN_PHONE
                 )
-        else:
-            print("Payment failed/cancelled")
+        elif order:
+            order.status = "failed"
+            db.session.commit()
+            print(f"Payment failed/cancelled for order {order_id}")
+
         return jsonify({"ResultCode": 0, "ResultDesc": "Accepted"}), 200
     except Exception as e:
         print(f"Callback error: {e}")
         return jsonify({"ResultCode": 1, "ResultDesc": "Error"}), 200
+
 
 # ---------------- Admin Login ----------------
 @app.route('/login', methods=['GET', 'POST'])
