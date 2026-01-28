@@ -13,7 +13,11 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'super-secret-change-me'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///eggs.db'
+database_url = os.getenv("postgresql://postgres:nLgGVsgQxEBWVQXwmslUyAXPmnNycxAp@postgres.railway.internal:5432/railway")
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///eggs.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # M-Pesa config
