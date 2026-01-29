@@ -211,7 +211,13 @@ def login():
             return redirect(url_for('admin'))
         flash('Wrong username/password', 'danger')
     return render_template('login.html')
-
+# Add this route to check if the payment is done (for the JavaScript polling)
+@app.route('/check_order_status/<int:order_id>')
+def check_order_status(order_id):
+    order = Order.query.get(order_id)
+    if order:
+        return jsonify({"status": order.status})
+    return jsonify({"status": "not_found"}), 404
 @app.route('/logout')
 @login_required
 def logout():
