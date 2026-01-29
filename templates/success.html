@@ -24,5 +24,33 @@
             <a href="/" class="btn btn-primary w-100 mt-3">Back to Shop</a>
         </div>
     </div>
+<script>
+        function checkPaymentStatus() {
+            // This calls the route we just added in app.py
+            fetch('/check_order_status/{{ order.id }}')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Current Status:", data.status);
+
+                    if (data.status === 'Completed') {
+                        // 1. Change the text
+                        document.getElementById('status-header').innerText = "Payment Confirmed! 🎉";
+                        document.getElementById('status-header').className = "text-success";
+
+                        // 2. Change the alert box
+                        const alertBox = document.getElementById('status-alert');
+                        alertBox.innerHTML = "<strong>Success!</strong> Your payment has been verified. We are now processing your order.";
+                        alertBox.className = "alert alert-success mt-3";
+
+                        // 3. Stop checking once it's completed
+                        clearInterval(statusInterval);
+                    }
+                })
+                .catch(err => console.log("Error checking status:", err));
+        }
+
+        // Check every 3 seconds (3000 milliseconds)
+        const statusInterval = setInterval(checkPaymentStatus, 3000);
+    </script>
 </body>
 </html>
