@@ -5,15 +5,15 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from twilio.rest import Client
 from dotenv import load_dotenv
 import requests
+import africastalking
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'super-secret-change-me'
-database_url = os.getenv("postgresql://postgres:nLgGVsgQxEBWVQXwmslUyAXPmnNycxAp@postgres.railway.internal:5432/railway")
+database_url = os.getenv("DATABASE_URL")
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
@@ -27,10 +27,7 @@ MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
 MPESA_PASSKEY = os.getenv('MPESA_PASSKEY')
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL')
 
-# Twilio config
-TWILIO_SID = os.getenv('TWILIO_ACCOUNT_SID')
-TWILIO_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-TWILIO_PHONE = os.getenv('TWILIO_PHONE_NUMBER')
+
 ADMIN_PHONE = os.getenv('ADMIN_PHONE_NUMBER')
 
 db = SQLAlchemy(app)
@@ -59,7 +56,27 @@ class Price(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+# Initialize Africa's Talking (Put these with your other config)
+AT_USERNAME = os.getenv("AT_USERNAME", "sandbox")
+AT_API_KEY = os.getenv("AT_API_KEY")
+africastalking.initialize(AT_USERNAME, AT_API_KEY)
+sms = africastalking.SMS
 
+def send_admin_sms(order):
+    """Sends a notification to the admin when an order is paid"""
+    message = (
+        f"🐣 EGG SHOP: New Paid Order!\n"
+        f"Customer: {order.name}\n"
+        f"Amount: {order.amount} trays\n"
+        f"Loc: {order.location}\n"
+        f"Phone: {order.phone}"
+    )
+    try:
+        # Note: recipients must be a list
+        response = sms.send(message, [ADMIN_PHONE])
+        print(f"AT SMS Response: {response}")
+    except Exception as e:
+        print(f"AT SMS Error: {e}")
 # ---------------- M-Pesa Helpers ----------------
 from requests.auth import HTTPBasicAuth
 
@@ -168,7 +185,13 @@ def mpesa_callback():
     order = Order.query.filter_by(checkout_request_id=checkout_id).first()
 
     if order:
-        order.status = "Completed" if result_code == 0 else "Failed"
+        if result_code == 0:
+            order.status = "Completed"
+            # TRIGGER THE SMS HERE
+            send_admin_sms(order)
+        else:
+            order.status = "Failed"
+
         db.session.commit()
         print(f"Order {order.id} updated to {order.status}")
 
