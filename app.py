@@ -161,13 +161,12 @@ def index():
         if checkout_id:
             order.checkout_request_id = checkout_id
             db.session.commit()
-            flash(f'Payment prompt sent to {phone}! Complete on your phone.', 'success')
+            return redirect(url_for('index', order_id=order.id))
         else:
             db.session.delete(order)
             db.session.commit()
             flash(f'Payment start failed: {error}', 'danger')
-
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
 
     return render_template('index.html', price=price)
 
