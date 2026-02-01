@@ -219,6 +219,32 @@
             loadingSpinner.classList.remove('d-none');
         });
     </script>
+{% if request.args.get('order_id') %}
+<div id="payment-status" class="alert alert-info">
+Waiting for payment confirmation...
+</div>
 
+<script>
+const orderId = "{{ request.args.get('order_id') }}";
+
+setInterval(() => {
+  fetch(`/check_order_status/${orderId}`)
+    .then(r => r.json())
+    .then(data => {
+
+      if (data.status === "Completed") {
+        document.getElementById("payment-status").innerHTML =
+          "✅ Payment Successful! Your order is confirmed.";
+      }
+
+      if (data.status === "Failed") {
+        document.getElementById("payment-status").innerHTML =
+          "❌ Payment Failed. Try again.";
+      }
+
+    });
+}, 3000);
+</script>
+{% endif %}
 </body>
 </html>
