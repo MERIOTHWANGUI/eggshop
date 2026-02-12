@@ -223,6 +223,18 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+#about route
+@app.route('/about')
+def about():
+    price = Price.query.first().egg_price if Price.query.first() else 150.0
+    return render_template('about.html', price=price)
+
+# contact us
+@app.route('/contact')
+def contact():
+    price = Price.query.first().egg_price if Price.query.first() else 150.0  # same as other pages
+    return render_template('contact.html', price=price)
+
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
@@ -264,3 +276,4 @@ with app.app_context():
     db.session.commit()
 
 # ---------------- Gunicorn-ready: no need to call app.run ----------------
+
