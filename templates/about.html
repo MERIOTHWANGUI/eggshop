@@ -1,10 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}About Us - Egg Shop KE{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <div class="text-center my-5">
+            <h1 class="fw-bold text-dark">About Egg Shop KE</h1>
+            <p class="lead text-muted">Fresh eggs. Honest delivery. Nairobi only.</p>
+        </div>
+
+        <div class="text-center mb-5">
+           <img src="https://thumbs.dreamstime.com/b/fresh-brown-eggs-cardboard-carton-close-up-neatly-arranged-showcasing-their-natural-texture-vibrant-color-under-warm-370887129.jpg"
+     alt="Neat tray of fresh brown eggs ready for delivery" class="img-fluid hero-img shadow">
+            <p class="text-muted small mt-2">Our happy layers in Kiambu / Thika area</p>
+        </div>
+
+        <div class="card p-4 p-md-5 mb-5">
+            <h3 class="mb-4">Who We Are</h3>
+            <p class="lead">
+                Egg Shop KE started in 2025 because we believe Nairobi families deserve
+                truly fresh eggs — not ones that have been sitting in a warehouse for days.
+            </p>
+            <p>
+                We work directly with small-scale farmers around Kiambu, Thika and Limuru
+                who raise healthy, free-range chickens. No middlemen, no long storage —
+                eggs are collected daily and delivered to your door the same day or next morning.
+            </p>
+
+            <h4 class="mt-5 mb-3">Why Customers Choose Us</h4>
+            <ul class="list-group list-group-flush fs-5">
+                <li class="list-group-item">🐣 Grade A fresh eggs every time</li>
+                <li class="list-group-item">🚚 Same-day / next-day delivery in Nairobi</li>
+                <li class="list-group-item">💰 Fair price – KES {{ price|round(0)|int }} per tray</li>
+                <li class="list-group-item">🔒 Easy & secure M-Pesa payment</li>
+                <li class="list-group-item">📱 SMS confirmation + delivery updates</li>
+            </ul>
+
+            <div class="text-center mt-5">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    Order Fresh Eggs Now
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+           <img src="https://thumbs.dreamstime.com/b/ai-generated-rhode-island-red-hen-perched-weathered-fencepost-golden-sunset-background-scene-captures-detailed-423422971.jpg"
+     alt="Healthy free-range brown hen on a Kenyan-style farm"
+     class="img-fluid bottom-img shadow-sm">
+            <p class="text-muted small mt-3">Picked today • Delivered today</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
