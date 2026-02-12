@@ -1,10 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Egg Shop KE{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <!-- Header -->
+        <div class="text-center my-5">
+            <h1 class="fw-bold text-dark">Contact Us</h1>
+            <p class="lead text-muted">We're here to help with your egg orders or questions</p>
+        </div>
+
+        <!-- Hero / Reassurance Image -->
+        <div class="text-center mb-5">
+            <img src="https://thumbs.dreamstime.com/b/farm-fresh-organic-brown-eggs-ready-to-eat-chicken-carton-your-convenience-protein-needs-perfect-breakfast-cooking-403870968.jpg"
+                         alt="Fresh brown eggs in tray – ready for same-day delivery in Nairobi"
+                         class="img-fluid hero-img">
+            <p class="text-muted small mt-2">We pack every order with care</p>
+        </div>
+
+        <!-- Main Contact Card -->
+        <div class="card p-4 p-md-5 mb-5">
+            <h3 class="mb-4 text-center">Get in Touch</h3>
+
+            <div class="row g-4 text-center">
+                <!-- WhatsApp (most used in Kenya) -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <i class="bi bi-whatsapp fs-1 text-success mb-3"></i>
+                        <h5>WhatsApp / Call</h5>
+                        <p class="fs-5 fw-bold">{{ ADMIN_PHONE or '0712 345 678' }}</p>
+                        <p class="text-muted">Fastest way to ask about orders, delivery, or availability</p>
+                        <a href="https://wa.me/{{ ADMIN_PHONE|replace('0', '254', 1) if ADMIN_PHONE else '254712345678' }}"
+                           target="_blank" class="btn btn-success btn-lg mt-2">
+                            Chat on WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SMS / Phone -->
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm p-4">
+                        <i class="bi bi-telephone-fill fs-1 text-primary mb-3"></i>
+                        <h5>Phone / SMS</h5>
+                        <p class="fs-5 fw-bold">{{ ADMIN_PHONE or '0712 345 678' }}</p>
+                        <p class="text-muted">Call or text for quick questions</p>
+                        <a href="tel:{{ ADMIN_PHONE or '0712345678' }}" class="btn btn-outline-primary btn-lg mt-2">
+                            Call Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extra Info -->
+            <div class="mt-5 text-center">
+                <h4>Business Hours</h4>
+                <p class="text-muted">
+                    Orders & support: Monday – Saturday 7:00 AM – 7:00 PM<br>
+                    Same-day delivery cut-off: 1:00 PM
+                </p>
+
+                <h4 class="mt-4">Delivery Areas</h4>
+                <p class="text-muted">
+                    We cover most of Nairobi: Westlands, Kilimani, Karen, Ngong Road, Embakasi, Rongai, CBD, and more.<br>
+                    Not sure if we reach your area? Just WhatsApp us!
+                </p>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    Back to Order Eggs
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Reassurance Image -->
+        <div class="text-center mt-5">
+             <img src="https://thumbs.dreamstime.com/b/ai-generated-rhode-island-red-hen-perched-weathered-fencepost-golden-sunset-background-scene-captures-detailed-423422971.jpg"
+     alt="Healthy free-range brown hen on a Kenyan-style farm"
+     class="img-fluid bottom-img shadow-sm">
+            <p class="text-muted small mt-3">Fresh daily – delivered with care</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
