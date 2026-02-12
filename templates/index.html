@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fresh Eggs Order - Nairobi</title>
 
-    <!-- Bootstrap 5.3 CDN -->
+    <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        .navbar-brand {
+            font-weight: 600;
+            color: #e67e22 !important;
+        }
+        .nav-link {
+            color: #34495e !important;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #e67e22 !important;
         }
         .card {
             border: none;
@@ -26,76 +37,95 @@
             border-color: #e67e22;
             padding: 0.75rem 1.5rem;
             font-weight: 500;
+            transition: all 0.3s;
         }
         .btn-primary:hover {
             background-color: #d35400;
             border-color: #d35400;
         }
         .price-display {
-            font-size: 2.1rem;
-            font-weight: 600;
+            font-size: 2.4rem;
+            font-weight: 700;
             color: #2c3e50;
         }
         .total-display {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #27ae60;
-            min-height: 2.2rem;
         }
         .form-label {
             font-weight: 500;
             color: #34495e;
         }
-        .alert-dismissible {
-            margin-top: 1.5rem;
-        }
-        .hero-img {
-            max-height: 280px;
-            object-fit: cover;
+        .hero-img, .reassurance-img {
             border-radius: 16px;
-        }
-        .price-egg-img {
-            width: 90px;
-            height: 90px;
             object-fit: cover;
-            border: 3px solid #e67e22;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .egg-circle {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border: 4px solid #e67e22;
             border-radius: 50%;
         }
-        .bottom-img {
-            max-width: 280px;
-            border-radius: 12px;
+        .alert-success, .alert-danger {
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 1.25rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">🐣 Egg Shop KE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Order</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('about') }}">About Us</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+                    <!-- Add later: Delivery, Contact -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
+            <div class="col-12 col-md-9 col-lg-7">
 
-                <!-- Header / Branding -->
-                <div class="text-center my-5">
-                    <h1 class="fw-bold text-dark">Fresh Eggs Order</h1>
-                    <p class="text-muted">Quality eggs delivered to your doorstep in Nairobi</p>
-                </div>
-
-                <!-- Hero Image: Fresh eggs tray -->
+                <!-- Branding Header -->
                 <div class="text-center mb-5">
-                    <img src="https://images.pexels.com/photos/8236168/pexels-photo-8236168.jpeg"
-                         alt="Fresh brown eggs neatly arranged in a tray, ready for delivery"
-                         class="img-fluid hero-img shadow">
-                    <p class="text-muted small mt-2">Farm-fresh trays delivered fast across Nairobi</p>
+                    <h1 class="fw-bold">Fresh Eggs Order</h1>
+                    <p class="lead text-muted">Quality farm eggs delivered fast across Nairobi</p>
                 </div>
 
-                <!-- Main Order Card -->
-                <div class="card p-4 p-md-5 mb-5">
-                    <div class="text-center mb-4">
-                        <h3>Current Price</h3>
-                        <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-                            <!-- Small egg image next to price -->
-                            <img src="https://images.pexels.com/photos/2959317/pexels-photo-2959317.jpeg"
-                                 alt="Close-up of six fresh brown eggs in a tray"
-                                 class="price-egg-img shadow-sm">
+                <!-- Hero Image -->
+                <div class="text-center mb-5">
+                    <img src="https://thumbs.dreamstime.com/b/farm-fresh-organic-brown-eggs-ready-to-eat-chicken-carton-your-convenience-protein-needs-perfect-breakfast-cooking-403870968.jpg"
+                         alt="Fresh brown eggs in tray – ready for same-day delivery in Nairobi"
+                         class="img-fluid hero-img">
+                    <p class="text-muted small mt-2">Farm-fresh trays • Delivered to your door</p>
+                </div>
+
+                <!-- Order Card -->
+                <div class="card p-4 p-md-5">
+                    <div class="text-center mb-5">
+                        <h3>Today's Price</h3>
+                        <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap">
+                            <img src="https://www.shutterstock.com/shutterstock/photos/2643627129/display_1500/stock-photo-close-up-image-of-fresh-brown-eggs-arranged-in-a-cardboard-egg-tray-the-natural-texture-earthy-2643627129.jpg"
+                                 alt="Close-up fresh brown eggs"
+                                 class="egg-circle">
                             <div>
                                 <div class="price-display">KES {{ price|round(0)|int }}</div>
                                 <small class="text-muted">per tray (30 eggs)</small>
@@ -104,48 +134,40 @@
                     </div>
 
                     <form method="POST" class="needs-validation" novalidate id="orderForm">
-                        <!-- Name -->
                         <div class="mb-4">
                             <label for="name" class="form-label">Your Name</label>
                             <input type="text" class="form-control form-control-lg" id="name" name="name"
-                                   placeholder="e.g. Mercy Wangui" required maxlength="100"
-                                   aria-describedby="nameHelp">
+                                   placeholder="e.g. Merioth Wangui" required maxlength="100">
                             <div class="invalid-feedback">Please enter your name.</div>
                         </div>
 
-                        <!-- Phone -->
                         <div class="mb-4">
                             <label for="phone" class="form-label">M-Pesa Phone Number</label>
                             <input type="tel" class="form-control form-control-lg" id="phone" name="phone"
                                    placeholder="0712345678" pattern="0[17][0-9]{8}" required maxlength="10">
-                            <div class="form-text text-muted">We'll send the payment prompt here.</div>
-                            <div class="invalid-feedback">Valid Kenyan mobile number required (e.g. 0712345678).</div>
+                            <div class="form-text text-muted">You'll get the STK push here.</div>
+                            <div class="invalid-feedback">Enter a valid Kenyan number (e.g. 0712345678).</div>
                         </div>
 
-                        <!-- Location -->
                         <div class="mb-4">
                             <label for="location" class="form-label">Delivery Location</label>
                             <input type="text" class="form-control form-control-lg" id="location" name="location"
-                                   placeholder="e.g. Ngong Road, Karen, Westlands..." required maxlength="200"
-                                   aria-describedby="locationHelp">
-                            <div id="locationHelp" class="form-text text-muted">Be as specific as possible for fast delivery.</div>
-                            <div class="invalid-feedback">Please enter your delivery location.</div>
+                                   placeholder="e.g. Ngong Road, Karen, Westlands, Embakasi..." required maxlength="200">
+                            <div class="form-text text-muted">Be specific for faster delivery (e.g. include estate/landmark).</div>
+                            <div class="invalid-feedback">Please enter your location.</div>
                         </div>
 
-                        <!-- Amount -->
-                        <div class="mb-4">
+                        <div class="mb-5">
                             <label for="amount" class="form-label">Number of Trays</label>
                             <input type="number" class="form-control form-control-lg" id="amount" name="amount"
                                    min="1" max="100" step="1" value="1" required>
-                            <div class="invalid-feedback">Enter at least 1 tray (max 100).</div>
+                            <div class="invalid-feedback">At least 1 tray (max 100).</div>
                         </div>
 
-                        <!-- Live Total -->
-                        <div class="text-center mb-4 total-display" id="totalDisplay">
-                            Total: KES {{ price|round(0)|int }}
+                        <div class="text-center mb-5 total-display" id="totalDisplay">
+                            Total: KES {{ price|round(0)|int|default(150) }}
                         </div>
 
-                        <!-- Submit Button + Spinner -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
                                 Place Order Now
@@ -154,25 +176,62 @@
                                 <div class="spinner-border text-warning" role="status">
                                     <span class="visually-hidden">Processing...</span>
                                 </div>
-                                <div class="mt-2 fw-medium">Placing your order...</div>
+                                <div class="mt-2 fw-medium">Sending to M-Pesa...</div>
                             </div>
                         </div>
                     </form>
 
-                    <!-- Bottom reassurance image: Chickens on farm -->
+                    <!-- Reassurance -->
                     <div class="text-center mt-5 pt-4 border-top">
-                        <img src="https://images.pexels.com/photos/34314107/pexels-photo-34314107.jpeg"
-                             alt="Happy free-range chickens on a Kenyan farm, source of fresh eggs"
-                             class="img-fluid bottom-img shadow-sm">
-                        <p class="text-muted small mt-3">Sourced from healthy, happy chickens • Fresh daily</p>
+                        <img src="https://thumbs.dreamstime.com/b/hens-free-range-chickens-meadow-green-grass-near-to-village-homes-houses-246743120.jpg"
+                             alt="Happy free-range chickens on a Kenyan farm"
+                             class="img-fluid reassurance-img mb-3">
+                        <p class="text-muted small">Sourced daily from healthy, free-range chickens • Fresh & delivered with care</p>
                     </div>
                 </div>
+
+                <!-- Payment Status (improved) -->
+                {% if request.args.get('order_id') %}
+                <div id="payment-status" class="alert alert-info mt-5 text-center">
+                    Waiting for M-Pesa confirmation... (keep page open)
+                </div>
+
+                <script>
+                    const orderId = "{{ request.args.get('order_id') }}";
+                    const statusDiv = document.getElementById("payment-status");
+
+                    const checkInterval = setInterval(() => {
+                        fetch(`/check_order_status/${orderId}`)
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data.status === "Completed") {
+                                    statusDiv.className = "alert alert-success mt-5 text-center";
+                                    statusDiv.innerHTML = `
+                                        ✅ Payment Confirmed!<br>
+                                        Thank you! Your trays are being packed.<br>
+                                        You'll get an SMS with delivery ETA soon.<br><br>
+                                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary mt-2">Order More</a>
+                                    `;
+                                    clearInterval(checkInterval);
+                                } else if (data.status === "Failed") {
+                                    statusDiv.className = "alert alert-danger mt-5 text-center";
+                                    statusDiv.innerHTML = `
+                                        ❌ Payment not completed.<br>
+                                        Please check M-Pesa and try again or WhatsApp us.
+                                    `;
+                                    clearInterval(checkInterval);
+                                }
+                            })
+                            .catch(err => console.error(err));
+                    }, 4000);  // Slightly slower polling to save resources
+                </script>
+                {% endif %}
 
                 <!-- Flash Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ 'success' if category == 'message' else category }} alert-dismissible fade show" role="alert">
+                            <div class="alert alert-{{ 'success' if category == 'message' else category }} alert-dismissible fade show mt-4" role="alert">
                                 {{ message }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
@@ -187,7 +246,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-    <!-- Live total script -->
+    <!-- Live Total Calculation -->
     <script>
         const pricePerTray = {{ price }};
         const amountInput = document.getElementById('amount');
@@ -219,32 +278,6 @@
             loadingSpinner.classList.remove('d-none');
         });
     </script>
-{% if request.args.get('order_id') %}
-<div id="payment-status" class="alert alert-info">
-Waiting for payment confirmation...
-</div>
 
-<script>
-const orderId = "{{ request.args.get('order_id') }}";
-
-setInterval(() => {
-  fetch(`/check_order_status/${orderId}`)
-    .then(r => r.json())
-    .then(data => {
-
-      if (data.status === "Completed") {
-        document.getElementById("payment-status").innerHTML =
-          "✅ Payment Successful! Your order is confirmed.";
-      }
-
-      if (data.status === "Failed") {
-        document.getElementById("payment-status").innerHTML =
-          "❌ Payment Failed. Try again.";
-      }
-
-    });
-}, 3000);
-</script>
-{% endif %}
 </body>
 </html>
