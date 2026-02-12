@@ -57,7 +57,7 @@ class Price(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 # Initialize Africa's Talking (Put these with your other config)
-AT_USERNAME = os.getenv("AT_USERNAME", "eggdelivery")
+AT_USERNAME = os.getenv("AT_USERNAME")
 AT_API_KEY = os.getenv("AT_API_KEY")
 africastalking.initialize(AT_USERNAME, AT_API_KEY)
 sms = africastalking.SMS
